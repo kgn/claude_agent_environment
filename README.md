@@ -13,23 +13,11 @@ A powerful tool for managing multi-repository development workflows with Claude 
 
 ## Installation
 
-### Quick Setup (Recommended)
+### Quick Installation
 
-For interactive installation (with prompts):
-```bash
-curl -O https://raw.githubusercontent.com/kgn/claude_agent_environment/main/install.sh && bash install.sh
-```
-
-For non-interactive installation (no prompts):
+Run this one-line command:
 ```bash
 curl -sSL https://raw.githubusercontent.com/kgn/claude_agent_environment/main/install.sh | bash
-```
-
-Or manually clone and setup:
-```bash
-git clone https://github.com/kgn/claude_agent_environment.git
-cd claude_agent_environment
-./setup.sh
 ```
 
 This will:
@@ -37,37 +25,24 @@ This will:
 - Add `cae` to your PATH automatically
 - Provide next steps for configuration
 
-After running, either:
-- Open a new terminal window, or
-- Run `source ~/.zshrc` (or `~/.bashrc` for bash)
+After installation, either open a new terminal or run `source ~/.zshrc` (or `~/.bashrc` for bash).
 
 ### Manual Installation
 
-#### Option 1: Install as a command-line tool
-
-1. Clone and install the package:
+1. Clone the repository:
 ```bash
 git clone https://github.com/kgn/claude_agent_environment.git
 cd claude_agent_environment
+```
+
+2. Run the setup script:
+```bash
+./setup.sh
+```
+
+Or install with pip directly:
+```bash
 pip install -e .
-```
-
-This installs the `cae` command globally.
-
-**Note**: 
-- If you get a warning about pip being outdated, upgrade it with: `python3 -m pip install --upgrade pip`
-- For user installations, pip may install scripts to a directory not in your PATH (e.g., `~/Library/Python/3.x/bin` on macOS). If `cae` command is not found after installation, add this directory to your PATH or use Option 2 below.
-
-#### Option 2: Use directly from source
-
-1. Clone this repository:
-```bash
-git clone https://github.com/kgn/claude_agent_environment.git
-```
-
-2. Add to your PATH or create an alias:
-```bash
-alias cae="python3 /path/to/claude_agent_environment/cae"
 ```
 
 ## Setup
