@@ -13,7 +13,27 @@ A powerful tool for managing multi-repository development workflows with Claude 
 
 ## Installation
 
-### Option 1: Install as a command-line tool
+### Quick Setup (Recommended)
+
+Run the automatic setup script:
+```bash
+git clone https://github.com/kgn/claude_agent_environment.git
+cd claude_agent_environment
+./setup.sh
+```
+
+This will:
+- Install the package
+- Add `cae` to your PATH automatically
+- Provide next steps for configuration
+
+After running, either:
+- Open a new terminal window, or
+- Run `source ~/.zshrc` (or `~/.bashrc` for bash)
+
+### Manual Installation
+
+#### Option 1: Install as a command-line tool
 
 1. Clone and install the package:
 ```bash
@@ -24,7 +44,11 @@ pip install -e .
 
 This installs the `cae` command globally.
 
-### Option 2: Use directly from source
+**Note**: 
+- If you get a warning about pip being outdated, upgrade it with: `python3 -m pip install --upgrade pip`
+- For user installations, pip may install scripts to a directory not in your PATH (e.g., `~/Library/Python/3.x/bin` on macOS). If `cae` command is not found after installation, add this directory to your PATH or use Option 2 below.
+
+#### Option 2: Use directly from source
 
 1. Clone this repository:
 ```bash
@@ -43,12 +67,7 @@ alias cae="python3 /path/to/claude_agent_environment/cae"
 cd ~/Development/my-workspace
 ```
 
-2. Create a `cae_config.json` file in this directory:
-```bash
-# Copy the example config
-cp /path/to/claude_agent_environment/cae_config.example.json cae_config.json
-# Or create your own
-```
+2. Create a `cae_config.json` file in this directory (see example below in Configuration section)
 
 3. Edit `cae_config.json` with your organization's repositories (see Configuration section below)
 
@@ -237,21 +256,59 @@ Supported repository types with appropriate build/test commands:
 
 ## Troubleshooting
 
-### Claude CLI not launching
-- Verify Claude is installed
+### Common Installation Issues
+
+#### Outdated pip warning
+If you see a warning about pip being outdated:
+```bash
+python3 -m pip install --upgrade pip
+```
+
+#### Permission denied during installation
+If pip fails with permission errors, use the `--user` flag:
+```bash
+pip install -e . --user
+```
+
+#### Command not found: cae
+After installation, if `cae` command is not found:
+
+1. **Check if it was installed to a non-PATH directory:**
+   ```bash
+   # macOS
+   find ~/Library/Python -name "cae"
+   
+   # Linux
+   find ~/.local/bin -name "cae"
+   ```
+
+2. **Add the directory to your PATH:**
+   ```bash
+   # Add to ~/.zshrc (macOS) or ~/.bashrc (Linux)
+   export PATH="$HOME/Library/Python/3.x/bin:$PATH"  # Replace 3.x with your Python version
+   ```
+
+3. **Or create an alias:**
+   ```bash
+   alias cae="/path/to/cae"  # Use the path from step 1
+   ```
+
+### Runtime Issues
+
+#### Claude CLI not launching
+- Verify Claude is installed: `which claude`
 - The script will try to find Claude in common locations
 - Try running Claude manually: `cd your-branch && claude`
 
-### Command not found: cae
-- Make sure you installed the package with `pip install -e .`
-- Or use the direct path: `python3 /path/to/cae`
-
-### Permission denied when cloning
+#### Permission denied when cloning repositories
 - Ensure you have SSH keys set up for GitHub
-- Or use HTTPS URLs with authentication
+- Or use HTTPS URLs with authentication in your `cae_config.json`
 
-### Branch already exists
+#### Branch already exists
 The script will automatically check out existing branches and pull the latest changes.
+
+#### Configuration file not found
+Create a `cae_config.json` in your project root directory. See the Configuration section above for details.
 
 ## Contributing
 

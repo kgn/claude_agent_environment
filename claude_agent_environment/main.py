@@ -30,9 +30,8 @@ def load_config():
     
     if not config_path.exists():
         print(f"❌ Error: Configuration file not found: {config_path}")
-        print("   Please create a cae_config.json file. You can copy cae_config.example.json as a starting point:")
-        print(f"   Create a cae_config.json in your project root directory")
-        print(f"   See https://github.com/yourusername/claude-agent-environment for an example")
+        print("   Please create a cae_config.json file in your project root directory")
+        print("   See https://github.com/kgn/claude_agent_environment for configuration examples")
         sys.exit(1)
     
     try:
