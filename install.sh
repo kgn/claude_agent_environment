@@ -24,35 +24,36 @@ echo
 if [ -d "$DIR_NAME" ]; then
     echo -e "${YELLOW}⚠️  Directory '$DIR_NAME' already exists!${NC}"
     echo
-    echo "What would you like to do?"
-    echo "  1) Remove existing directory and do fresh install"
-    echo "  2) Update existing installation (git pull)"
-    echo "  3) Cancel installation"
-    echo
-    read -p "Please choose (1-3): " choice
     
-    case $choice in
-        1)
+    # Check if we're running interactively or piped
+    if [ -t 0 ]; then
+        # Interactive mode - can read user input
+        read -p "Do you want to remove it and do a fresh install? (y/N): " -n 1 -r
+        echo
+        if [[ $REPLY =~ ^[Yy]$ ]]; then
             echo -e "${YELLOW}Removing existing directory...${NC}"
             rm -rf "$DIR_NAME"
             echo -e "${GREEN}✓ Directory removed${NC}"
-            ;;
-        2)
-            echo -e "${YELLOW}Updating existing installation...${NC}"
-            cd "$DIR_NAME"
-            git pull
-            ./setup.sh
+        else
+            echo -e "${YELLOW}Installation cancelled. To update existing installation:${NC}"
+            echo "  cd $DIR_NAME && git pull && ./setup.sh"
             exit 0
-            ;;
-        3)
-            echo -e "${RED}Installation cancelled${NC}"
-            exit 0
-            ;;
-        *)
-            echo -e "${RED}Invalid choice. Installation cancelled${NC}"
-            exit 1
-            ;;
-    esac
+        fi
+    else
+        # Non-interactive mode (piped) - exit with instructions
+        echo -e "${RED}Cannot proceed: directory already exists${NC}"
+        echo
+        echo "Please run one of these commands:"
+        echo -e "${GREEN}  # For fresh install:${NC}"
+        echo "  rm -rf $DIR_NAME && curl -sSL https://raw.githubusercontent.com/kgn/claude_agent_environment/main/install.sh | bash"
+        echo
+        echo -e "${GREEN}  # To update existing:${NC}"
+        echo "  cd $DIR_NAME && git pull && ./setup.sh"
+        echo
+        echo -e "${GREEN}  # For interactive install (recommended):${NC}"
+        echo "  curl -O https://raw.githubusercontent.com/kgn/claude_agent_environment/main/install.sh && bash install.sh"
+        exit 1
+    fi
 fi
 
 # Clone the repository
