@@ -22,36 +22,25 @@ echo
 
 # Check if directory already exists
 if [ -d "$DIR_NAME" ]; then
-    echo -e "${YELLOW}⚠️  Directory '$DIR_NAME' already exists!${NC}"
-    echo
-    
     # Check if we're running interactively or piped
     if [ -t 0 ]; then
         # Interactive mode - can read user input
-        read -p "Do you want to remove it and do a fresh install? (y/N): " -n 1 -r
+        echo -e "${YELLOW}Directory '$DIR_NAME' already exists${NC}"
+        read -p "Would you like to override? (Y/n): " -n 1 -r
         echo
-        if [[ $REPLY =~ ^[Yy]$ ]]; then
+        if [[ ! $REPLY =~ ^[Nn]$ ]]; then
+            # Default to Yes (Y or Enter or any other key)
             echo -e "${YELLOW}Removing existing directory...${NC}"
             rm -rf "$DIR_NAME"
-            echo -e "${GREEN}✓ Directory removed${NC}"
         else
-            echo -e "${YELLOW}Installation cancelled. To update existing installation:${NC}"
-            echo "  cd $DIR_NAME && git pull && ./setup.sh"
+            echo -e "${YELLOW}Installation cancelled${NC}"
             exit 0
         fi
     else
-        # Non-interactive mode (piped) - exit with instructions
-        echo -e "${RED}Cannot proceed: directory already exists${NC}"
-        echo
-        echo "Please run one of these commands:"
-        echo -e "${GREEN}  # For fresh install:${NC}"
-        echo "  rm -rf $DIR_NAME && curl -sSL https://raw.githubusercontent.com/kgn/claude_agent_environment/main/install.sh | bash"
-        echo
-        echo -e "${GREEN}  # To update existing:${NC}"
-        echo "  cd $DIR_NAME && git pull && ./setup.sh"
-        echo
-        echo -e "${GREEN}  # For interactive install (recommended):${NC}"
-        echo "  curl -O https://raw.githubusercontent.com/kgn/claude_agent_environment/main/install.sh && bash install.sh"
+        # Non-interactive mode (piped) - simple message
+        echo -e "${YELLOW}Directory '$DIR_NAME' already exists${NC}"
+        echo "Please remove it first: rm -rf $DIR_NAME"
+        echo "Then run the installer again"
         exit 1
     fi
 fi
