@@ -1,0 +1,38 @@
+[build-system]
+requires = ["setuptools>=64", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "claude-agent-environment"
+version = "1.0.0"
+description = "Multi-repository development workflow manager for Claude AI"
+readme = "README.md"
+license = {text = "MIT"}
+authors = [
+    {name = "David Keegan", email = "me@davidkeegan.com"},
+]
+requires-python = ">=3.6"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "Topic :: Software Development :: Version Control :: Git",
+]
+dependencies = []
+
+[project.urls]
+Homepage = "https://github.com/kgn/claude_agent_environment"
+Repository = "https://github.com/kgn/claude_agent_environment"
+Issues = "https://github.com/kgn/claude_agent_environment/issues"
+
+[project.scripts]
+cae = "claude_agent_environment.main:main"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["claude_agent_environment*"]
+
+[tool.setuptools.package-data]
+claude_agent_environment = ["claude_template.md", "cae_config.example.json"]
