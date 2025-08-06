@@ -15,7 +15,12 @@ A powerful tool for managing multi-repository development workflows with Claude 
 
 ### Quick Setup (Recommended)
 
-Run this one-line installer:
+For interactive installation (with prompts):
+```bash
+curl -O https://raw.githubusercontent.com/kgn/claude_agent_environment/main/install.sh && bash install.sh
+```
+
+For non-interactive installation (no prompts):
 ```bash
 curl -sSL https://raw.githubusercontent.com/kgn/claude_agent_environment/main/install.sh | bash
 ```

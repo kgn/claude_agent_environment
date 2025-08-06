@@ -37,11 +37,10 @@ if [ -d "$DIR_NAME" ]; then
             exit 0
         fi
     else
-        # Non-interactive mode (piped) - simple message
+        # Non-interactive mode (piped) - auto-remove with warning
         echo -e "${YELLOW}Directory '$DIR_NAME' already exists${NC}"
-        echo "Please remove it first: rm -rf $DIR_NAME"
-        echo "Then run the installer again"
-        exit 1
+        echo -e "${YELLOW}Auto-removing for fresh install (non-interactive mode)...${NC}"
+        rm -rf "$DIR_NAME"
     fi
 fi
 
