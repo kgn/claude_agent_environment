@@ -71,12 +71,14 @@ Edit `cae_config.json` to match your organization's setup:
     "frontend": {
       "url": "https://github.com/your-org/frontend",
       "type": "node",
+      "setup": "npm install",
       "build": "npm run build",
       "test": "npm run test"
     },
     "backend": {
       "url": "https://github.com/your-org/backend",
       "type": "python",
+      "setup": "pip install -r requirements.txt",
       "build": "python -m build",
       "test": "pytest"
     },
@@ -95,6 +97,7 @@ Edit `cae_config.json` to match your organization's setup:
 - **repositories**: Define your repositories with their URLs and optional build/test commands
   - `url`: GitHub repository URL (required)
   - `type`: Repository type (e.g., node, python, swift)
+  - `setup`: Setup command to run after checkout (e.g., `npm install`, `pip install -r requirements.txt`) (optional)
   - `build`: Build command (optional)
   - `test`: Test command (optional)
 - **linear_base_url**: Linear workspace URL for ticket linking (optional)
@@ -119,6 +122,11 @@ cd ~/Development/my-workspace
 cae feature/new-feature frontend backend docs
 ```
 
+The tool will automatically:
+- Clone or update each repository
+- Checkout the specified branch
+- Run the setup command if configured (e.g., `npm install` for Node projects)
+
 ### With Ticket-Based Branches
 
 ```bash
@@ -129,12 +137,13 @@ This will:
 1. Create a directory structure: `./eng-123-implement-new-feature/` in your current directory
 2. Clone or update the specified repositories
 3. Check out or create the branch in each repository
-4. Generate a CLAUDE.md file with:
+4. Run setup commands if configured (e.g., `npm install`, `pip install -r requirements.txt`)
+5. Generate a CLAUDE.md file with:
    - Branch information
    - Ticket links (if detected)
    - Repository URLs
    - Build and test commands
-5. Launch Claude CLI in the workspace directory
+6. Launch Claude CLI in the workspace directory
 
 ### Examples
 
@@ -202,6 +211,7 @@ Simply add them to your `config.json`:
 "new-service": {
   "url": "https://github.com/your-org/new-service",
   "type": "go",
+  "setup": "go mod download",
   "build": "go build ./...",
   "test": "go test ./..."
 }
@@ -236,6 +246,7 @@ Supported repository types with appropriate build/test commands:
 
 ### Optional Fields
 
+- **setup**: Command to run after checkout for dependency installation (e.g., `npm install`, `pip install -r requirements.txt`)
 - **build** and **test**: Commands are optional for each repository. Omit them for repos that don't need building or testing (e.g., documentation)
 - **linear_base_url**: Only needed if you use Linear for issue tracking. Omit if using GitHub Issues or other trackers
 

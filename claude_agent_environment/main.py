@@ -113,6 +113,18 @@ def clone_or_update_repo(repo_name, repo_url, branch_name, base_dir):
             print(f"❌ Failed to create branch {branch_name} in {repo_name}")
             return False
     
+    # Run setup command if configured
+    repo_config = REPO_CONFIGS.get(repo_name, {})
+    setup_cmd = repo_config.get('setup')
+    if setup_cmd:
+        print(f"🔧 Running setup command for {repo_name}: {setup_cmd}")
+        success, output = run_command(setup_cmd, cwd=repo_path)
+        if success:
+            print(f"✅ Setup completed for {repo_name}")
+        else:
+            print(f"⚠️  Setup command failed for {repo_name}, but continuing...")
+            print(f"   Error: {output}")
+    
     print(f"✅ Successfully set up {repo_name} on branch '{branch_name}'")
     return True
 
