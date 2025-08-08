@@ -250,6 +250,60 @@ Supported repository types with appropriate build/test commands:
 - **build** and **test**: Commands are optional for each repository. Omit them for repos that don't need building or testing (e.g., documentation)
 - **linear_base_url**: Only needed if you use Linear for issue tracking. Omit if using GitHub Issues or other trackers
 
+## Testing
+
+The project includes comprehensive unit tests to ensure reliability and catch regressions.
+
+### Running Tests
+
+```bash
+# Run all tests
+make test
+
+# Run tests with verbose output
+make test-verbose
+
+# Run tests with coverage report
+make test-coverage
+
+# Or using pytest directly
+python -m pytest tests/
+```
+
+### Test Coverage
+
+The test suite covers:
+- **Repository validation**: Checking if repositories exist, handling 404 errors
+- **Branch handling**: Creating new branches, checking out existing branches, handling conflicts
+- **Error handling**: Interactive prompts, --continue-on-error flag, partial failures
+- **Utility functions**: Ticket ID extraction, configuration parsing
+
+Current test coverage: ~78%
+
+### Development Setup
+
+To set up the development environment with test dependencies:
+
+```bash
+# Install package with development dependencies
+pip install -e ".[dev]"
+
+# This installs:
+# - pytest: Test framework
+# - pytest-cov: Coverage reporting
+# - pytest-mock: Mocking utilities
+# - black: Code formatter
+# - ruff: Linter
+```
+
+### Continuous Integration
+
+The project uses GitHub Actions for automated testing on:
+- Multiple Python versions (3.8, 3.9, 3.10, 3.11)
+- Multiple operating systems (Ubuntu, macOS)
+
+Tests run automatically on every push and pull request to the main branch.
+
 ## Troubleshooting
 
 ### Common Installation Issues

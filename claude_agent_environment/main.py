@@ -43,10 +43,17 @@ def load_config():
         print("   Please check that your cae_config.json file contains valid JSON.")
         sys.exit(1)
 
-# Load configuration at module level
-CONFIG = load_config()
-REPO_MAPPING = {name: repo['url'] for name, repo in CONFIG['repositories'].items()}
-REPO_CONFIGS = CONFIG['repositories']
+# Global configuration variables (will be loaded in main or set by tests)
+CONFIG = None
+REPO_MAPPING = {}
+REPO_CONFIGS = {}
+
+def initialize_config():
+    """Initialize configuration from file."""
+    global CONFIG, REPO_MAPPING, REPO_CONFIGS
+    CONFIG = load_config()
+    REPO_MAPPING = {name: repo['url'] for name, repo in CONFIG['repositories'].items()}
+    REPO_CONFIGS = CONFIG['repositories']
 
 
 def run_command(cmd, cwd=None):
@@ -96,35 +103,66 @@ def clone_or_update_repo(repo_name, repo_url, branch_name, base_dir):
                 print(f"   Error: {output.strip()}")
             return False
     
+    # First check if branch exists locally
+    success, local_branches = run_command(
+        f"git branch --list {branch_name}",
+        cwd=repo_path
+    )
+    
+    branch_exists_locally = bool(local_branches.strip())
+    
     # Check if branch exists remotely
     success, output = run_command(
         f"git ls-remote --heads origin {branch_name}", 
         cwd=repo_path
     )
     
-    if output.strip():
-        # Branch exists remotely, checkout
-        print(f"🔄 Checking out existing branch '{branch_name}' in {repo_name}...")
-        success, _ = run_command(f"git checkout {branch_name}", cwd=repo_path)
-        if success:
-            # Pull latest changes
-            run_command(f"git pull origin {branch_name}", cwd=repo_path)
+    branch_exists_remotely = bool(output.strip())
+    
+    if branch_exists_locally:
+        # Branch already exists locally, just checkout
+        print(f"🔄 Switching to existing local branch '{branch_name}' in {repo_name}...")
+        success, output = run_command(f"git checkout {branch_name}", cwd=repo_path)
+        if not success:
+            print(f"❌ Failed to checkout branch {branch_name} in {repo_name}")
+            print(f"   Error: {output.strip()}")
+            return False
+        
+        if branch_exists_remotely:
+            # Pull latest changes from remote
+            print(f"📥 Pulling latest changes from remote...")
+            success, output = run_command(f"git pull origin {branch_name}", cwd=repo_path)
+            if not success:
+                print(f"⚠️  Warning: Could not pull latest changes: {output.strip()}")
+    elif branch_exists_remotely:
+        # Branch exists remotely but not locally, checkout from remote
+        print(f"🔄 Checking out branch '{branch_name}' from remote in {repo_name}...")
+        success, output = run_command(f"git checkout -b {branch_name} origin/{branch_name}", cwd=repo_path)
+        if not success:
+            # Try without -b in case of detached HEAD or other issues
+            success, output = run_command(f"git checkout {branch_name}", cwd=repo_path)
+            if not success:
+                print(f"❌ Failed to checkout branch {branch_name} from remote")
+                print(f"   Error: {output.strip()}")
+                return False
     else:
-        # Create new branch
+        # Branch doesn't exist anywhere, create new one
         print(f"🌿 Creating new branch '{branch_name}' in {repo_name}...")
         # First ensure we're on main/master
-        success, _ = run_command("git checkout main || git checkout master", cwd=repo_path)
+        success, output = run_command("git checkout main || git checkout master", cwd=repo_path)
         if not success:
             print(f"❌ Failed to checkout main branch in {repo_name}")
+            print(f"   Error: {output.strip()}")
             return False
         
         # Pull latest from main
         run_command("git pull", cwd=repo_path)
         
         # Create and checkout new branch
-        success, _ = run_command(f"git checkout -b {branch_name}", cwd=repo_path)
+        success, output = run_command(f"git checkout -b {branch_name}", cwd=repo_path)
         if not success:
             print(f"❌ Failed to create branch {branch_name} in {repo_name}")
+            print(f"   Error: {output.strip()}")
             return False
     
     # Run setup command if configured
@@ -250,6 +288,9 @@ def create_claude_markdown(branch_name, repos, base_dir):
 
 
 def main():
+    # Initialize configuration
+    initialize_config()
+    
     # Load available repos from config for help text
     available_repos = ', '.join(CONFIG.get('repositories', {}).keys())
     org_name = get_org_from_repos(CONFIG.get('repositories', {}))
