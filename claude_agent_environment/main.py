@@ -65,6 +65,12 @@ def run_command(cmd, cwd=None):
         return False, e.stderr
 
 
+def check_repo_exists(repo_url):
+    """Check if a GitHub repository exists using git ls-remote."""
+    success, output = run_command(f"git ls-remote {repo_url} HEAD")
+    return success
+
+
 def clone_or_update_repo(repo_name, repo_url, branch_name, base_dir):
     """Clone repo if it doesn't exist, or fetch latest if it does."""
     repo_path = base_dir / repo_name
@@ -77,9 +83,17 @@ def clone_or_update_repo(repo_name, repo_url, branch_name, base_dir):
             return False
     else:
         print(f"📥 Cloning {repo_name} from {repo_url}...")
-        success, _ = run_command(f"git clone {repo_url} {repo_path}")
+        success, output = run_command(f"git clone {repo_url} {repo_path}")
         if not success:
-            print(f"❌ Failed to clone {repo_name}")
+            # Check if it's a 404 error (repository not found)
+            if "Repository not found" in output or "404" in output:
+                print(f"❌ Repository '{repo_name}' does not exist at {repo_url}")
+                print(f"   Please verify the repository name is correct.")
+                if repo_name not in REPO_MAPPING:
+                    print(f"   Note: '{repo_name}' is not in your cae_config.json, so it was assumed to be a GitHub repository.")
+            else:
+                print(f"❌ Failed to clone {repo_name}")
+                print(f"   Error: {output.strip()}")
             return False
     
     # Check if branch exists remotely
@@ -267,6 +281,11 @@ Repositories will be organized in: ./<branch-name-with-hyphens>/
         nargs="+",
         help="Repository names to checkout (e.g., ios backend web)"
     )
+    parser.add_argument(
+        "--continue-on-error",
+        action="store_true",
+        help="Continue with valid repositories if some are not found (non-interactive mode)"
+    )
     
     args = parser.parse_args()
     
@@ -282,12 +301,54 @@ Repositories will be organized in: ./<branch-name-with-hyphens>/
     print(f"📦 Repositories: {', '.join(args.repos)}")
     print("-" * 50)
     
+    # First, validate all repositories exist
+    invalid_repos = []
+    repo_urls = {}
+    org_name = get_org_from_repos(CONFIG.get('repositories', {}))
+    github_base_url = f"https://github.com/{org_name}"
+    
+    print("🔍 Validating repositories...")
+    for repo in args.repos:
+        repo_url = REPO_MAPPING.get(repo, f"{github_base_url}/{repo}")
+        repo_urls[repo] = repo_url
+        
+        # Skip validation for repos defined in config (assume they're correct)
+        if repo in REPO_MAPPING:
+            continue
+            
+        # Check if the repository exists
+        if not check_repo_exists(repo_url):
+            invalid_repos.append(repo)
+    
+    if invalid_repos:
+        print(f"\n❌ The following repositories could not be found:")
+        for repo in invalid_repos:
+            print(f"   • {repo} (expected at {repo_urls[repo]})")
+        print(f"\n💡 Suggestions:")
+        print(f"   1. Check if the repository name is spelled correctly")
+        print(f"   2. Verify the repository exists in the {org_name} organization")
+        print(f"   3. Add the repository to your cae_config.json if it's in a different location")
+        
+        # Ask if user wants to continue with valid repos only
+        valid_repos = [r for r in args.repos if r not in invalid_repos]
+        if valid_repos:
+            print(f"\n📋 Valid repositories found: {', '.join(valid_repos)}")
+            if args.continue_on_error:
+                print("   Continuing with valid repositories (--continue-on-error flag set)")
+                args.repos = valid_repos
+            else:
+                response = input("Continue with valid repositories only? (y/N): ")
+                if response.lower() != 'y':
+                    return 1
+                args.repos = valid_repos
+        else:
+            print("\n❌ No valid repositories to process.")
+            return 1
+    
+    print()
     success_count = 0
     for repo in args.repos:
-        # Extract org from existing repo URLs for fallback
-        org_name = get_org_from_repos(CONFIG.get('repositories', {}))
-        github_base_url = f"https://github.com/{org_name}"
-        repo_url = REPO_MAPPING.get(repo, f"{github_base_url}/{repo}")
+        repo_url = repo_urls.get(repo, REPO_MAPPING.get(repo, f"{github_base_url}/{repo}"))
         if clone_or_update_repo(repo, repo_url, args.branch, base_dir):
             success_count += 1
         print()
