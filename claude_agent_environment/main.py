@@ -288,6 +288,10 @@ def create_claude_markdown(branch_name, repos, base_dir):
 
 
 def main():
+    # Check for updates
+    from claude_agent_environment.version_check import display_update_notice
+    display_update_notice()
+    
     # Initialize configuration
     initialize_config()
     

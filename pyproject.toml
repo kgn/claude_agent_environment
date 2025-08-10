@@ -20,7 +20,9 @@ classifiers = [
     "Intended Audience :: Developers",
     "Topic :: Software Development :: Version Control :: Git",
 ]
-dependencies = []
+dependencies = [
+    "packaging>=21.0",
+]
 
 [project.optional-dependencies]
 test = [
