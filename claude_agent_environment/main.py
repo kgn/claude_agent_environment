@@ -309,7 +309,7 @@ Available repositories:
 You can also use any other repo name and it will try:
   https://github.com/{org_name}/<repo-name>
   
-Repositories will be organized in: ./<branch-name-with-hyphens>/
+Repositories will be organized in: ~/.claude_agent_environment/workspaces/<branch-name>/
         """
     )
     
@@ -330,10 +330,12 @@ Repositories will be organized in: ./<branch-name-with-hyphens>/
     
     args = parser.parse_args()
     
-    # Create directory structure in current directory: ./<branch-name-with-hyphens>
+    # Create directory structure in ~/.claude_agent_environment/workspaces/<branch-name-with-hyphens>
     # Convert slashes to hyphens in branch name for directory
     dir_name = args.branch.replace('/', '-')
-    base_dir = Path.cwd() / dir_name
+    workspaces_dir = Path.home() / ".claude_agent_environment" / "workspaces"
+    workspaces_dir.mkdir(parents=True, exist_ok=True)
+    base_dir = workspaces_dir / dir_name
     base_dir.mkdir(parents=True, exist_ok=True)
     
     print(f"🚀 Starting multi-repo checkout")

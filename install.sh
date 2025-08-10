@@ -13,7 +13,8 @@ BLUE='\033[0;34m'
 NC='\033[0m' # No Color
 
 REPO_URL="https://github.com/kgn/claude_agent_environment.git"
-DIR_NAME="claude_agent_environment"
+INSTALL_DIR="$HOME/.claude_agent_environment"
+DIR_NAME="$(basename "$INSTALL_DIR")"
 
 echo -e "${BLUE}═══════════════════════════════════════════════════════════${NC}"
 echo -e "${BLUE}     Claude Agent Environment (CAE) Installer${NC}"
@@ -21,35 +22,35 @@ echo -e "${BLUE}═════════════════════�
 echo
 
 # Check if directory already exists
-if [ -d "$DIR_NAME" ]; then
+if [ -d "$INSTALL_DIR" ]; then
     # Check if we're running interactively or piped
     if [ -t 0 ]; then
         # Interactive mode - can read user input
-        echo -e "${YELLOW}Directory '$DIR_NAME' already exists${NC}"
+        echo -e "${YELLOW}Directory '$INSTALL_DIR' already exists${NC}"
         read -p "Would you like to override? (Y/n): " -n 1 -r
         echo
         if [[ ! $REPLY =~ ^[Nn]$ ]]; then
             # Default to Yes (Y or Enter or any other key)
             echo -e "${YELLOW}Removing existing directory...${NC}"
-            rm -rf "$DIR_NAME"
+            rm -rf "$INSTALL_DIR"
         else
             echo -e "${YELLOW}Installation cancelled${NC}"
             exit 0
         fi
     else
         # Non-interactive mode (piped) - auto-remove with warning
-        echo -e "${YELLOW}Directory '$DIR_NAME' already exists${NC}"
+        echo -e "${YELLOW}Directory '$INSTALL_DIR' already exists${NC}"
         echo -e "${YELLOW}Auto-removing for fresh install (non-interactive mode)...${NC}"
-        rm -rf "$DIR_NAME"
+        rm -rf "$INSTALL_DIR"
     fi
 fi
 
-# Clone the repository
-echo -e "${GREEN}📥 Cloning repository...${NC}"
-git clone "$REPO_URL"
+# Clone the repository to the specific location
+echo -e "${GREEN}📥 Cloning repository to $INSTALL_DIR...${NC}"
+git clone "$REPO_URL" "$INSTALL_DIR"
 
 # Enter directory and run setup
-cd "$DIR_NAME"
+cd "$INSTALL_DIR"
 
 echo -e "${GREEN}🔧 Running setup...${NC}"
 echo

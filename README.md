@@ -21,7 +21,7 @@ curl -sSL https://raw.githubusercontent.com/kgn/claude_agent_environment/main/in
 ```
 
 This will:
-- Install the package
+- Install the package to `~/.claude_agent_environment`
 - Add `cae` to your PATH automatically
 - Provide next steps for configuration
 
@@ -105,8 +105,9 @@ Edit `cae_config.json` to match your organization's setup:
 
 **Note**: 
 - The GitHub organization name is automatically extracted from repository URLs
-- Branches are created in the current directory where you run `cae`
+- Workspaces are created in `~/.claude_agent_environment/workspaces/`
 - Each branch gets its own subdirectory with all specified repositories
+- This ensures consistent location for all projects and easy updates
 
 ## Usage
 
@@ -134,7 +135,7 @@ cae eng-123-implement-new-feature frontend backend
 ```
 
 This will:
-1. Create a directory structure: `./eng-123-implement-new-feature/` in your current directory
+1. Create a directory structure: `~/.claude_agent_environment/workspaces/eng-123-implement-new-feature/`
 2. Clone or update the specified repositories
 3. Check out or create the branch in each repository
 4. Run setup commands if configured (e.g., `npm install`, `pip install -r requirements.txt`)
@@ -163,17 +164,21 @@ cae eng-123 frontend backend provider
 
 ## Directory Structure
 
-After running `cae`, your current directory will contain:
+After running `cae`, you'll have:
 
 ```
 my-workspace/
 ├── cae_config.json        # Your configuration
-├── claude_template.md     # Optional custom template
-└── feature-branch-name/   # Created by cae
-    ├── CLAUDE.md          # Context file for Claude
-    ├── frontend/          # Repository 1  
-    ├── backend/           # Repository 2
-    └── docs/              # Repository 3
+└── claude_template.md     # Optional custom template
+
+~/.claude_agent_environment/
+├── workspaces/
+│   └── feature-branch-name/   # Created by cae
+│       ├── CLAUDE.md          # Context file for Claude
+│       ├── frontend/          # Repository 1  
+│       ├── backend/           # Repository 2
+│       └── docs/              # Repository 3
+└── [tool installation files]
 ```
 
 ## CLAUDE.md File
