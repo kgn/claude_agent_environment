@@ -105,7 +105,8 @@ Edit `cae_config.json` to match your organization's setup:
 
 **Note**: 
 - The GitHub organization name is automatically extracted from repository URLs
-- Repositories are cloned to your current working directory
+- A directory named after your branch is created in the current working directory
+- Repositories are cloned into this branch directory
 - This allows you to organize your workspaces however you prefer
 
 ## Usage
@@ -134,7 +135,7 @@ cae eng-123-implement-new-feature frontend backend
 ```
 
 This will:
-1. Clone repositories to the current working directory
+1. Create a directory named after the branch in your current working directory
 2. Clone or update the specified repositories
 3. Check out or create the branch in each repository
 4. Run setup commands if configured (e.g., `npm install`, `pip install -r requirements.txt`)
@@ -171,10 +172,11 @@ my-workspace/
 └── claude_template.md     # Optional custom template
 
 Current working directory/
-├── CLAUDE.md          # Context file for Claude
-├── frontend/          # Repository 1  
-├── backend/           # Repository 2
-└── docs/              # Repository 3
+└── feature-branch-name/      # Directory created by cae
+    ├── CLAUDE.md            # Context file for Claude
+    ├── frontend/            # Repository 1  
+    ├── backend/             # Repository 2
+    └── docs/                # Repository 3
 
 ~/.claude_agent_environment/
 └── [tool installation files]

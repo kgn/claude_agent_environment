@@ -309,7 +309,7 @@ Available repositories:
 You can also use any other repo name and it will try:
   https://github.com/{org_name}/<repo-name>
   
-Repositories will be cloned to the current working directory
+Repositories will be cloned to: ./<branch-name>/
         """
     )
     
@@ -330,8 +330,11 @@ Repositories will be cloned to the current working directory
     
     args = parser.parse_args()
     
-    # Use current working directory as the base directory for repositories
-    base_dir = Path.cwd()
+    # Create a directory for the branch in the current working directory
+    # Convert slashes to hyphens in branch name for directory
+    dir_name = args.branch.replace('/', '-')
+    base_dir = Path.cwd() / dir_name
+    base_dir.mkdir(parents=True, exist_ok=True)
     
     print(f"🚀 Starting multi-repo checkout")
     print(f"📌 Branch: {args.branch}")
@@ -400,8 +403,9 @@ Repositories will be cloned to the current working directory
     if success_count == len(args.repos):
         print(f"\n🎉 All repositories set up successfully in {base_dir}!")
         
-        # Launch Claude in the current directory
-        print(f"\n📂 Launching Claude...")
+        # Change to the branch directory and launch Claude
+        print(f"\n📂 Changing to {base_dir} and launching Claude...")
+        os.chdir(base_dir)
         
         # Try common locations for Claude CLI
         claude_paths = [
@@ -421,7 +425,7 @@ Repositories will be cloned to the current working directory
         
         if not claude_found:
             print("⚠️  Claude CLI not found. Please run 'claude' manually.")
-            print(f"📍 You are in: {base_dir.absolute()}")
+            print(f"📍 You are now in: {base_dir.absolute()}")
         
         return 0
     else:
