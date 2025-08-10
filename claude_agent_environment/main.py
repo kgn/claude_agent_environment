@@ -309,7 +309,7 @@ Available repositories:
 You can also use any other repo name and it will try:
   https://github.com/{org_name}/<repo-name>
   
-Repositories will be organized in: ~/.claude_agent_environment/workspaces/<branch-name>/
+Repositories will be cloned to the current working directory
         """
     )
     
@@ -330,13 +330,8 @@ Repositories will be organized in: ~/.claude_agent_environment/workspaces/<branc
     
     args = parser.parse_args()
     
-    # Create directory structure in ~/.claude_agent_environment/workspaces/<branch-name-with-hyphens>
-    # Convert slashes to hyphens in branch name for directory
-    dir_name = args.branch.replace('/', '-')
-    workspaces_dir = Path.home() / ".claude_agent_environment" / "workspaces"
-    workspaces_dir.mkdir(parents=True, exist_ok=True)
-    base_dir = workspaces_dir / dir_name
-    base_dir.mkdir(parents=True, exist_ok=True)
+    # Use current working directory as the base directory for repositories
+    base_dir = Path.cwd()
     
     print(f"🚀 Starting multi-repo checkout")
     print(f"📌 Branch: {args.branch}")
@@ -405,11 +400,9 @@ Repositories will be organized in: ~/.claude_agent_environment/workspaces/<branc
     if success_count == len(args.repos):
         print(f"\n🎉 All repositories set up successfully in {base_dir}!")
         
-        # Change to the directory and run Claude
-        print(f"\n📂 Changing to {base_dir} and launching Claude...")
-        os.chdir(base_dir)
+        # Launch Claude in the current directory
+        print(f"\n📂 Launching Claude...")
         
-        # Launch Claude in the new directory
         # Try common locations for Claude CLI
         claude_paths = [
             "claude",  # In PATH
@@ -428,7 +421,7 @@ Repositories will be organized in: ~/.claude_agent_environment/workspaces/<branc
         
         if not claude_found:
             print("⚠️  Claude CLI not found. Please run 'claude' manually.")
-            print(f"📍 You are now in: {base_dir.absolute()}")
+            print(f"📍 You are in: {base_dir.absolute()}")
         
         return 0
     else:

@@ -9,7 +9,7 @@ A powerful tool for managing multi-repository development workflows with Claude 
 - 📝 **Claude Integration**: Generates CLAUDE.md files with task context and launches Claude CLI
 - 🎫 **Ticket Integration**: Extracts ticket IDs from branch names and links to issue trackers
 - ⚙️ **Configurable**: JSON-based configuration for easy customization
-- 🏗️ **Organized Workspace**: Creates structured directories for each feature/task
+- 🏗️ **Organized Workspace**: Clones repositories directly to your current working directory
 
 ## Installation
 
@@ -105,9 +105,8 @@ Edit `cae_config.json` to match your organization's setup:
 
 **Note**: 
 - The GitHub organization name is automatically extracted from repository URLs
-- Workspaces are created in `~/.claude_agent_environment/workspaces/`
-- Each branch gets its own subdirectory with all specified repositories
-- This ensures consistent location for all projects and easy updates
+- Repositories are cloned to your current working directory
+- This allows you to organize your workspaces however you prefer
 
 ## Usage
 
@@ -135,7 +134,7 @@ cae eng-123-implement-new-feature frontend backend
 ```
 
 This will:
-1. Create a directory structure: `~/.claude_agent_environment/workspaces/eng-123-implement-new-feature/`
+1. Clone repositories to the current working directory
 2. Clone or update the specified repositories
 3. Check out or create the branch in each repository
 4. Run setup commands if configured (e.g., `npm install`, `pip install -r requirements.txt`)
@@ -171,13 +170,13 @@ my-workspace/
 ├── cae_config.json        # Your configuration
 └── claude_template.md     # Optional custom template
 
+Current working directory/
+├── CLAUDE.md          # Context file for Claude
+├── frontend/          # Repository 1  
+├── backend/           # Repository 2
+└── docs/              # Repository 3
+
 ~/.claude_agent_environment/
-├── workspaces/
-│   └── feature-branch-name/   # Created by cae
-│       ├── CLAUDE.md          # Context file for Claude
-│       ├── frontend/          # Repository 1  
-│       ├── backend/           # Repository 2
-│       └── docs/              # Repository 3
 └── [tool installation files]
 ```
 
