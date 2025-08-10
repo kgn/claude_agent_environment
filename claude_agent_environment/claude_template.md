@@ -4,11 +4,13 @@
 - **Branch Name**: `{branch_name}`
 {ticket_section}
 
-## Repositories to Update
+## Repositories
 
-The following repositories need to be updated for this task:
+The following repositories have been cloned and are ready for development:
 
 {repositories_list}
+
+**Note**: All repositories are already cloned in this directory with the branch `{branch_name}` checked out.
 
 ## Task Description
 
@@ -21,15 +23,15 @@ This task involves implementing changes across multiple repositories as specifie
 3. Update documentation as needed
 4. Follow the existing code patterns in each repository
 
-### Checklist
+### Development Checklist
 
-- [ ] Review ticket requirements
-- [ ] Implement changes in each repository
+- [ ] Review ticket requirements in {ticket_reference}
+- [ ] Implement required changes
 - [ ] Write/update tests
-- [ ] Test integration between services
-- [ ] Update documentation
-- [ ] Create pull requests
-- [ ] Request code reviews
+- [ ] Run tests to verify changes
+- [ ] Update documentation if needed
+- [ ] Commit changes with descriptive messages
+- [ ] Push changes and create pull requests
 
 ## Commands
 
